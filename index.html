@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>БИРГЕ KG — Чогуу Кыргызстанды өзгөртөбүз</title>
+
+  <!-- PWA & Mobile settings -->
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="БИРГЕ KG">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #d97706;
+      --primary-hover: #b45309;
+      --secondary: #0284c7;
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.5; padding-bottom: 80px; }
+
+    /* Header Styling */
+    header {
+      background: #ffffff; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
+    }
+    .header-container {
+      max-width: 1200px; margin: 0 auto; display: flex;
+      align-items: center; justify-content: space-between; padding: 12px 16px; flex-wrap: wrap; gap: 8px;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.2rem; cursor: pointer; }
+    .logo span { color: var(--primary); }
+    
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    .user-profile-badge {
+      display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+    }
+    .user-profile-badge i { color: #f59e0b; }
+
+    .lang-switcher select {
+      padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: #fff; font-weight: 600; cursor: pointer; outline: none; font-size: 0.85rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white; padding: 30px 16px; text-align: center;
+    }
+    .hero h1 { font-size: 1.5rem; margin-bottom: 6px; font-weight: 700; }
+    .hero p { font-size: 0.95rem; color: #94a3b8; margin-bottom: 18px; }
+    .search-bar {
+      max-width: 600px; margin: 0 auto; display: flex; gap: 8px;
+    }
+    .search-bar input {
+      flex: 1; padding: 10px 14px; border-radius: 8px; border: none; font-size: 0.95rem; outline: none;
+    }
+    .search-bar button {
+      background: var(--primary); color: white; border: none; padding: 10px 16px;
+      border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;
+    }
+
+    /* User Gamification Bar */
+    .user-stats-bar {
+      background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex;
+      flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;
+    }
+    .user-info-box { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 50px; height: 50px; border-radius: 50%; background: #e0f2fe; color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .user-details h4 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .rank-tag { background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+    .xp-bar-container { flex: 1; min-width: 220px; }
+    .xp-bar-text { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-muted); }
+    .xp-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .xp-progress { height: 100%; background: linear-gradient(90deg, var(--primary), #f59e0b); width: 0%; transition: width 0.3s ease; }
+
+    /* Layout & Containers */
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; }
+    .section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+    /* Categories Grid */
+    .categories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px;
+    }
+    @media (min-width: 640px) {
+      .categories-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    }
+    .cat-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; cursor: pointer; transition: 0.2s;
+      box-shadow: var(--shadow);
+    }
+    @media (min-width: 640px) {
+      .cat-card { flex-direction: row; align-items: center; }
+    }
+    .cat-card:active, .cat-card.active { border-color: var(--primary); background: #fffbeb; }
+    .cat-icon {
+      width: 40px; height: 40px; border-radius: 8px; background: #fef3c7;
+      color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .cat-info h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+    .cat-info p { font-size: 0.75rem; color: var(--text-muted); display: none; }
+    @media (min-width: 640px) { .cat-info p { display: block; } }
+
+    /* Actions Bar */
+    .actions-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .btn {
+      padding: 10px 14px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; text-decoration: none; font-size: 0.85rem; flex: 1; justify-content: center;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: #e0f2fe; color: var(--secondary); }
+    .btn-outline { border: 1px solid var(--border); background: #fff; color: var(--text-main); }
+
+    /* Layout Columns */
+    .main-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 900px) { .main-layout { grid-template-columns: 2fr 1fr; } }
+
+    /* Problem Cards */
+    .problem-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .problem-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 8px; }
+    .problem-title { font-weight: 600; font-size: 1rem; }
+    .badge {
+      padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; whitespace: nowrap;
+    }
+    .badge-new { background: #e0f2fe; color: #0369a1; }
+    .badge-confirmed { background: #fef3c7; color: #b45309; }
+    .badge-done { background: #dcfce7; color: #15803d; }
+    
+    .problem-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .problem-desc { font-size: 0.9rem; color: #334155; margin-bottom: 12px; }
+
+    /* Photo gallery in card */
+    .problem-photos { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+    .problem-photo-img { width: 90px; height: 90px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; }
+
+    .problem-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; }
+    .btn-confirm {
+      background: #f1f5f9; border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--text-main);
+    }
+
+    /* AI Assistant Card */
+    .ai-card {
+      background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+      border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 16px; margin-bottom: 20px;
+    }
+    .ai-card h3 { color: var(--secondary); display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ai-chat-box {
+      background: white; border-radius: 8px; padding: 10px; height: 180px; overflow-y: auto;
+      font-size: 0.85rem; margin-bottom: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;
+    }
+    .ai-msg { padding: 8px 10px; border-radius: 8px; max-width: 90%; word-break: break-word; }
+    .ai-msg.user { background: #f1f5f9; margin-left: auto; text-align: right; }
+    .ai-msg.bot { background: #e0f2fe; color: #0369a1; }
+    .ai-input { display: flex; gap: 6px; }
+    .ai-input input { flex: 1; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); outline: none; font-size: 0.85rem; }
+
+    /* Leaderboard / Rank Widget */
+    .ranks-card {
+      background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+    }
+    .ranks-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--primary); }
+    .rank-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .rank-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-user { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .rank-points { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
+
+    /* Modal Styling */
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; padding: 0;
+    }
+    @media (min-width: 640px) { .modal { align-items: center; padding: 20px; } }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: white; border-radius: var(--radius) var(--radius) 0 0; width: 100%; padding: 20px;
+      max-height: 85vh; overflow-y: auto; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    @media (min-width: 640px) { .modal-content { border-radius: var(--radius); max-width: 520px; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .close-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-muted); }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); outline: none; font-size: 0.9rem;
+    }
+
+    /* File Upload Box */
+    .file-upload-box {
+      border: 2px dashed #cbd5e1; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; background: #f8fafc; transition: 0.2s;
+    }
+    .file-upload-box:hover { border-color: var(--primary); background: #fffbeb; }
+    .file-upload-box i { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 6px; }
+    .file-upload-box p { font-size: 0.8rem; color: var(--text-muted); }
+    .file-input-hidden { display: none; }
+    .preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .preview-thumb { position: relative; width: 70px; height: 70px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+    .preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-thumb .remove-img {
+      position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%;
+      width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; cursor: pointer;
+    }
+
+    /* Fullscreen Photo Modal Viewer */
+    .image-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9); z-index: 1100; justify-content: center; align-items: center; padding: 16px;
+    }
+    .image-modal.active { display: flex; }
+    .image-modal img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
+
+    footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo" onclick="selectCategory('all')">
+        <i class="fa-solid fa-hand-holding-heart" style="color: var(--primary);"></i>
+        БИРГЕ <span>KG</span>
+      </div>
+      <div class="header-actions">
+        <div class="user-profile-badge" onclick="showUserRoleInfo()">
+          <i class="fa-solid fa-award"></i>
+          <span id="userHeaderRank">Активдүү жаран</span>
+        </div>
+        <div class="lang-switcher">
+          <select id="langSelect" onchange="setLanguage(this.value)">
+            <option value="ky">Кыргызча</option>
+            <option value="ru">Русский</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 id="heroTitle">Чогуу Кыргызстанды өзгөртөбүз</h1>
+    <p id="heroSubtitle">БИРГЕ KG — Кыргызстандын көйгөйлөрүн чечүү үчүн бирдиктүү платформа</p>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Бардык бөлүмдөр боюнча издөө..." onkeyup="handleSearch(this.value)">
+      <button onclick="handleSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <div class="user-stats-bar">
+      <div class="user-info-box">
+        <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="user-details">
+          <h4><span id="userName">Сабит Закыпов</span> <span class="rank-tag" id="userRankTag">3-деңгээл</span></h4>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" id="userRoleTitle">Наамы: Инициативдүү Коомдук Контролёр</span>
+        </div>
+      </div>
+      <div class="xp-bar-container">
+        <div class="xp-bar-text">
+          <span id="xpTitle">Тартылган тажрыйба (XP)</span>
+          <span id="xpNumbers">350 / 500 XP</span>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-progress" id="xpProgressBar" style="width: 70%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <h2 class="section-title"><i class="fa-solid fa-grid-2"></i> <span id="catTitle">Сегиз негизги багыт жана чечүү жолдору</span></h2>
+    <div class="categories-grid" id="categoriesContainer"></div>
+
+    <!-- Solution Steps Info Box for Selected Category -->
+    <div id="categorySolutionGuide" class="ai-card" style="margin-bottom: 24px; border-left: 4px solid var(--primary); display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h3 id="solutionGuideTitle" style="font-size: 1.05rem; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-lightbulb"></i> <span id="guideTitleText">Көйгөйдү чечүү кадамдары</span>
+        </h3>
+        <button onclick="toggleSolutionGuide(false)" style="background: none; border: none; font-size: 1rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+      <ul id="solutionGuideList" style="padding-left: 20px; font-size: 0.88rem; color: #334155; display: flex; flex-direction: column; gap: 6px;"></ul>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="actions-bar">
+      <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus-circle"></i> <span id="btnReport">Көйгөйдү кабарлоо</span></button>
+      <button class="btn btn-outline" onclick="filterByStatus('all')"><span id="filterAll">Бардыгы</span></button>
+      <button class="btn btn-outline" onclick="filterByStatus('new')"><span id="filterNew">Жаңы</span></button>
+      <button class="btn btn-outline" onclick="filterByStatus('confirmed')"><span id="filterConfirmed">Тастыкталган</span></button>
+      <button class="btn btn-outline" onclick="filterByStatus('done')"><span id="filterDone">Чечилгендер</span></button>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="main-layout">
+      <!-- Left Column: Problems Feed -->
+      <div>
+        <h2 class="section-title"><i class="fa-solid fa-list-check"></i> <span id="feedTitle">Кайрылуулар жана демилгелер</span></h2>
+        <div id="problemsFeed"></div>
+      </div>
+
+      <div>
+        <!-- AI Assistant Card -->
+        <div class="ai-card">
+          <h3><i class="fa-solid fa-robot"></i> Бирге AI Жардамчы</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;" id="aiDesc">Көйгөйдү чечүү, мыйзамдар же арыз жазуу боюнча суроо бериңиз.</p>
+          <div class="ai-chat-box" id="aiChatBox">
+            <div class="ai-msg bot" id="aiWelcome">Саламатсызбы! Мен БИРГЕ KG жасалма интеллектимин. Көйгөйдү кантип чечсе болорун сурасаңыз болот.</div>
+          </div>
+          <div class="ai-input">
+            <input type="text" id="aiInput" placeholder="Сурооңузду жазыңыз..." onkeypress="handleAiKeyPress(event)">
+            <button class="btn btn-primary" style="padding: 8px 12px;" onclick="sendAiMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+
+        <!-- Leaderboard Card -->
+        <div class="ranks-card">
+          <h3><i class="fa-solid fa-trophy"></i> <span id="leaderboardTitle">Эң активдүү жарандар</span></h3>
+          <ul class="rank-list" id="rankList">
+            <li class="rank-item">
+              <div class="rank-user"><i class="fa-solid fa-crown" style="color: #f59e0b;"></i> Бакыт Асанов</div>
+              <div class="rank-points">1240 XP</div>
+            </li>
+            <li class="rank-item">
+              <div class="rank-user"><i class="fa-solid fa-medal" style="color: #94a3b8;"></i> Айгүл Султанова</div>
+              <div class="rank-points">980 XP</div>
+            </li>
+            <li class="rank-item">
+              <div class="rank-user"><i class="fa-solid fa-award" style="color: #b45309;"></i> Сабит Закыпов (Сиз)</div>
+              <div class="rank-points">350 XP</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="problemModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Жаңы көйгөйдү кабарлоо</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="problemForm" onsubmit="submitProblem(event)">
+        <div class="form-group">
+          <label id="lblTitle">Көйгөйдүн аталышы</label>
+          <input type="text" id="formTitle" placeholder="Мис: Сугат суунун жетишсиздиги" required>
+        </div>
+        <div class="form-group">
+          <label id="lblCategory">Категорияны тандаңыз</label>
+          <select id="formCategory" required></select>
+        </div>
+        <div class="form-group">
+          <label id="lblLocation">Аймак / Дареги</label>
+          <input type="text" id="formLocation" placeholder="Мис: Нарын областы, Ат-Башы айылы" required>
+        </div>
+        <div class="form-group">
+          <label id="lblDesc">Көйгөйдүн толук сүрөттөлүшү</label>
+          <textarea id="formDesc" rows="3" placeholder="Көйгөй качан башталган жана кандай жардам керек?" required></textarea>
+        </div>
+
+        <!-- File / Photo Upload Area -->
+        <div class="form-group">
+          <label id="lblPhotos">Сүрөттөрдү жүктөө (Галереядан же Камерадан)</label>
+          <div class="file-upload-box" onclick="document.getElementById('fileInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <p id="lblUploadText">Сүрөт тандоо үчүн бул жерди басыңыз</p>
+          </div>
+          <input type="file" id="fileInput" class="file-input-hidden" accept="image/*" multiple onchange="handleFileSelect(event)">
+          <div class="preview-container" id="previewContainer"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="btnSubmit">Жөнөтүү (+50 XP)</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fullscreen Photo Viewer Modal -->
+  <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+    <img id="modalImageView" src="" alt="Сүрөт">
+  </div>
+
+  <footer>
+    <p>© 2026 БИРГЕ KG — Кыргызстандын бакубат келечеги үчүн биргелешкен платформа.</p>
+  </footer>
+
+  <script>
+    const state = {
+      currentLang: 'ky',
+      selectedCategory: 'all',
+      selectedStatus: 'all',
+      searchQuery: '',
+      userXp: 350,
+      userLevel: 3,
+      uploadedPhotos: [],
+      problems: [
+        {
+          id: 1,
+          title: "Сугат суу каналы тазаланууга муктаж",
+          cat: "water",
+          loc: "Чүй областы, Ысык-Ата району",
+          desc: "Айылдагы башкы каналга таштанды толгондуктан суу дыйкандарга жетишпей жатат. Ашар уюштуруп тазалоо керек.",
+          status: "confirmed",
+          date: "14.05.2026",
+          confirmations: 18,
+          photos: [
+            "https://images.unsplash.com/photo-1584467541268-b040f83be3fd?w=400&q=80",
+            "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80"
+          ]
+        },
+        {
+          id: 2,
+          title: "Мектептин жанына жөө өткөөл (зебра) коюу",
+          cat: "road",
+          loc: "Бишкек ш., №68 мектептин жаны",
+          desc: "Машиналар катуу ылдамдыкта өтүшөт. Окуучулардын коопсуздугу үчүн жол чырак же ылдамдык чектөөчү белги керек.",
+          status: "new",
+          date: "16.05.2026",
+          confirmations: 7,
+          photos: [
+            "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=400&q=80"
+          ]
+        },
+        {
+          id: 3,
+          title: "ОРТга акысыз даярдоо ийримин уюштуруу",
+          cat: "edu",
+          loc: "Ош областы, Кара-Суу району",
+          desc: "Айылдагы окуучуларга ОРТга даярданууга акысыз жардам бере турган студент-ыктыярчыларды издейбиз.",
+          status: "done",
+          date: "10.05.2026",
+          confirmations: 32,
+          photos: []
+        }
+      ]
+    };
+
+    const categoryIcons = {
+      water: 'fa-droplet',
+      eco: 'fa-leaf',
+      edu: 'fa-graduation-cap',
+      job: 'fa-briefcase',
+      road: 'fa-road',
+      med: 'fa-notes-medical',
+      city: 'fa-city',
+      social: 'fa-hand-holding-heart'
+    };
+
+    const categorySolutions = {
+      ky: {
+        water: [
+          "Айыл өкмөткө жана Суу чарба департаментине (Райводхоз) фото/видео далил менен расмий арыз жазыңыз.",
+          "Платформада көйгөйдү жарыялап, кошуналардан кеминде 10-15 колдоо (добуш) жыйнаңыз.",
+          "Ашар ыкмасы же жергиликтүү бюджеттин өнүктүрүү фонду аркылуу сугат арыктарын тазалоону уюштуруңуз."
+        ],
+        eco: [
+          "Мыйзамсыз таштанды же булганууну сүрөткө тартып, так геолокация менен БИРГЕ KG ге жүктөңүз.",
+          "Жергиликтүү Тазалык ишканасына же Экологиялык инспекцияга арыз жөнөтүңүз.",
+          "Айылда же микрорайондо 'Таза Ишембилик' акциясын жарыялап, коомдук ыктыярчыларды чогултуңуз."
+        ],
+        edu: [
+          "Мектеп же бала бакчадагы көйгөйдү БИРГЕ KG аркылуу райондук билим берүү бөлүмүнө (РАО) жеткириңиз.",
+          "ОРТга даярдануу же акысыз кошумча ийримдерди ачуу үчүн жергиликтүү мугалимдер жана ыктыярчы студенттер менен онлайн тайпа түзүңүз.",
+          "Билим берүү мекемелеринин материалдык базасын чыңдоо үчүн мектеп спонсорлорун же демөөрчүлөрдү тартуу."
+        ],
+        job: [
+          "Иш менен камсыз кылуу борборуна каттоодон өтүп, акысыз кесиптик курстарга жазылыңыз.",
+          "Чакан бизнес же дыйканчылык үчүн мамлекеттик же эл аралык гранттардын (мисалы, 'Социалдык контракт') сынагына арыз бериңиз.",
+          "БИРГЕ KG платформасында өзүңүздүн квалификацияңыз же сунуштаган кызматтарыңыз жөнүндө кулактандыруу калтырыңыз."
+        ],
+        road: [
+          "Жолдогу чуңкурларды же күйбөгөн чырактарды сүрөткө тартып, так дарегин көрсөтүңүз.",
+          "Жол эксплуатациялоо ишканасына (ДЕУ) же шаардык Мэриянын ЖКК бөлүмүнө арыз жөнөтүңүз.",
+          "Түнкү жарыктандыруу же жол белгилерин коюу үчүн 'Катышуучу бюджет' программасына долбоор сунуштаңыз."
+        ],
+        med: [
+          "Дары-дармектердин же медициналык кызматтардын жоктугу боюнча ФОМСтун Горячая линиясына (113) кайрылыңыз.",
+          "Айылдык дарыгерлик пункттарга (ФАП) керектүү жабдууларды алуу үчүн Саламаттыкты сактоо министрлигине жамааттык кайрылуу жазыңыз.",
+          "Ден соолук чыңдоо жана биринчи жардам көрсөтүү боюнча жергиликтүү медициналык семинарларды уюштуруу."
+        ],
+        city: [
+          "Ичүүчү суу, канализация же балдар аянтчаларынын бузулушун коомдук контролго алыңыз.",
+          "Жергиликтүү кеңештин (жергиликтүү депутаттардын) жыйынына көйгөйдү күн тартибине киргизүү боюнча сунуш киргизиңиз.",
+          "Тургундар ортосунда демилгелүү топ түзүп, аймакты көрктөндүрүү боюнча чакан гранттарга арыз жазыңыз."
+        ],
+        social: [
+          "Муктаж үй-бүлөлөргө, кары-картаңдарга же мүмкүнчүлүгү чектелген инсандарга даректүү гуманитардык жардам топтоону баштаңыз.",
+          "Социалдык өнүгүү башкармалыгы аркылуу мамлекеттик жөлөкпул же жардам алууга документтерди даярдоого көмөктөшүңүз.",
+          "Айылда/шаарда ыктыярчылар тармагын түзүп, социалдык колдоо акцияларын уюштуруңуз."
+        ]
+      },
+      ru: {
+        water: [
+          "Подайте официальное заявление с фото/видео доказательствами в айыл окмоту и Райводхоз.",
+          "Опубликуйте проблему на БИРГЕ KG и соберите не менее 10-15 голосов поддержки от соседей.",
+          "Организуйте очистку арыков и каналов методом ашара или через фонд развития местного бюджета."
+        ],
+        eco: [
+          "Сфотографируйте свалку или загрязнение и загрузите на БИРГЕ KG с точными координатами.",
+          "Направьте заявление в МП 'Тазалык' или Госэкоинспекцию.",
+          "Объявите акцию 'Субботник' в вашем районе и привлеките местных волонтёров."
+        ],
+        edu: [
+          "Опубликуйте проблему школы/детсада (нехватка учебников, ремонт) для привлечения районного отдела образования (РАО).",
+          "Создайте онлайн-группу с учителями и студентами-волонтёрами для бесплатной подготовки к ЖОРТ и кружкам.",
+          "Привлеките спонсоров и выпускников школы для улучшения материально-технической базы."
+        ],
+        job: [
+          "Зарегистрируйтесь в Центре содействия занятости и запишитесь на бесплатные курсы квалификации.",
+          "Подайте заявку на участие в программе грантов ('Социальный контракт') для малого бизнеса или фермерства.",
+          "Разместите объявление о своих навыках или предлагаемых услугах на БИРГЕ KG."
+        ],
+        road: [
+          "Сфотографируйте ямы на дорогах или неработающие фонари, указав точный адрес.",
+          "Отправьте обращение в Дорожно-эксплуатационное предприятие (ДЭУ) или отдел ЖКХ мэрии.",
+          "Предложите проект по установке освещения или знаков через программу 'Бюджет участия'."
+        ],
+        med: [
+          "Обратитесь на горячую линию ФОМС (113) при отсутствии лекарств или некачественном обслуживании.",
+          "Составьте коллективное обращение в Минздрав для оснащения местных ФАПов оборудованием.",
+          "Организуйте бесплатные тренинги по первой помощи и профилактике здоровья с привлечением врачей."
+        ],
+        city: [
+          "Возьмите под общественный контроль проблемы питьевой воды, канализации или детских площадок.",
+          "Внесите предложение местным депутатам (местному кенешу) для включения вопроса в повестку дня.",
+          "Сформируйте инициативную группу жителей для получения мелких грантов на благоустройство."
+        ],
+        social: [
+          "Организуйте адресный сбор гуманитарной помощи нуждающимся семьям, пожилым людям или ЛОВЗ.",
+          "Помогите собрать документы для получения государственных пособий через органы соцзащиты.",
+          "Создайте волонтёрскую сеть в вашем районе для проведения постоянных социальных акций."
+        ]
+      }
+    };
+
+    const i18n = {
+      ky: {
+        heroTitle: "Чогуу Кыргызстанды өзгөртөбүз",
+        heroSubtitle: "БИРГЕ KG — Кыргызстандын көйгөйлөрүн чечүү үчүн бирдиктүү платформа",
+        searchPlaceholder: "Бардык бөлүмдөр боюнча издөө...",
+        catTitle: "Сегиз негизги багыт жана чечүү жолдору",
+        btnReport: "Көйгөйдү кабарлоо",
+        filterAll: "Бардыгы",
+        filterNew: "Жаңы",
+        filterConfirmed: "Тастыкталган",
+        filterDone: "Чечилгендер",
+        feedTitle: "Кайрылуулар жана демилгелер",
+        aiDesc: "Көйгөйдү чечүү, мыйзамдар же арыз жазуу боюнча суроо бериңиз.",
+        aiWelcome: "Саламатсызбы! Мен БИРГЕ KG жасалма интеллектимин. Көйгөйдү кантип чечсе болорун сурасаңыз болот.",
+        leaderboardTitle: "Эң активдүү жарандар",
+        categories: [
+          { id: "water", name: "Суу жана айыл чарбасы", desc: "Суу тартыштыгы, сугат тутумдары" },
+          { id: "eco", name: "Экология жана таштанды", desc: "Ишембиликтер, мыйзамсыз таштандылар" },
+          { id: "edu", name: "Билим берүү", desc: "Акысыз сабактар, ОРТга даярдык" },
+          { id: "job", name: "Жумуш жана бизнес", desc: "Вакансиялар, чакан бизнес идеялары" },
+          { id: "road", name: "Жолдор жана инфраструктура", desc: "Жолдогу чуңкурлар, жарыктандыруу" },
+          { id: "med", name: "Медицинага жеткиликтүүлүк", desc: "Ооруканалар, медициналык кеңештер" },
+          { id: "city", name: "Шаар жана айыл көйгөйлөрү", desc: "Аймактык бардык кайрылуулар" },
+          { id: "social", name: "Социалдык жардам", desc: "Ыктыярчылар, муктаждарга колдоо" }
+        ]
+      },
+      ru: {
+        heroTitle: "Вместе изменим Кыргызстан",
+        heroSubtitle: "БИРГЕ KG — Единая платформа для решения проблем Кыргызстана",
+        searchPlaceholder: "Поиск по всем разделам...",
+        catTitle: "Восемь основных направлений и способы решения",
+        btnReport: "Сообщить о проблеме",
+        filterAll: "Все",
+        filterNew: "Новые",
+        filterConfirmed: "Подтвержденные",
+        filterDone: "Решенные",
+        feedTitle: "Обращения и инициативы",
+        aiDesc: "Задайте вопрос по решению проблем, законам или составлению обращений.",
+        aiWelcome: "Здравствуйте! Я искусственный интеллект БИРГЕ KG. Спросите меня, как решить возникшую проблему.",
+        leaderboardTitle: "Самые активные граждане",
+        categories: [
+          { id: "water", name: "Вода и сельское хозяйство", desc: "Дефицит воды, ирригация" },
+          { id: "eco", name: "Экология и мусор", desc: "Субботники, незаконные свалки" },
+          { id: "edu", name: "Образование", desc: "Бесплатные уроки, подготовка к ЖОРТ" },
+          { id: "job", name: "Работа и бизнес", desc: "Вакансии, идеи для малого бизнеса" },
+          { id: "road", name: "Дороги и инфраструктура", desc: "Ямы на дорогах, освещение" },
+          { id: "med", name: "Доступность медицины", desc: "Больницы, медицинские советы" },
+          { id: "city", name: "Городские и сельские проблемы", desc: "Все региональные обращения" },
+          { id: "social", name: "Социальная помощь", desc: "Волонтёры, поддержка нуждающихся" }
+        ]
+      }
+    };
+
+    function setLanguage(lang) {
+      state.currentLang = lang;
+      const dict = i18n[lang];
+
+      document.getElementById('heroTitle').innerText = dict.heroTitle;
+      document.getElementById('heroSubtitle').innerText = dict.heroSubtitle;
+      document.getElementById('searchInput').placeholder = dict.searchPlaceholder;
+      document.getElementById('catTitle').innerText = dict.catTitle;
+      document.getElementById('btnReport').innerText = dict.btnReport;
+      document.getElementById('filterAll').innerText = dict.filterAll;
+      document.getElementById('filterNew').innerText = dict.filterNew;
+      document.getElementById('filterConfirmed').innerText = dict.filterConfirmed;
+      document.getElementById('filterDone').innerText = dict.filterDone;
+      document.getElementById('feedTitle').innerText = dict.feedTitle;
+      document.getElementById('aiDesc').innerText = dict.aiDesc;
+      document.getElementById('aiWelcome').innerText = dict.aiWelcome;
+      document.getElementById('leaderboardTitle').innerText = dict.leaderboardTitle;
+
+      renderCategories();
+      renderProblems();
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoriesContainer');
+      const formSelect = document.getElementById('formCategory');
+      container.innerHTML = '';
+      formSelect.innerHTML = '';
+
+      i18n[state.currentLang].categories.forEach(cat => {
+        const card = document.createElement('div');
+        card.className = `cat-card ${state.selectedCategory === cat.id ? 'active' : ''}`;
+        card.onclick = () => selectCategory(cat.id);
+        card.innerHTML = `
+          <div class="cat-icon"><i class="fa-solid ${categoryIcons[cat.id]}"></i></div>
+          <div class="cat-info">
+            <h3>${cat.name}</h3>
+            <p>${cat.desc}</p>
+          </div>
+        `;
+        container.appendChild(card);
+
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.innerText = cat.name;
+        formSelect.appendChild(option);
+      });
+
+      updateSolutionGuide();
+    }
+
+    function toggleSolutionGuide(show) {
+      const guideBox = document.getElementById('categorySolutionGuide');
+      if (guideBox) {
+        guideBox.style.display = show ? 'block' : 'none';
+      }
+    }
+
+    function updateSolutionGuide() {
+      const guideBox = document.getElementById('categorySolutionGuide');
+      const listContainer = document.getElementById('solutionGuideList');
+      const titleContainer = document.getElementById('guideTitleText');
+
+      if (state.selectedCategory === 'all') {
+        guideBox.style.display = 'none';
+        return;
+      }
+
+      const catObj = i18n[state.currentLang].categories.find(c => c.id === state.selectedCategory);
+      const solutions = categorySolutions[state.currentLang][state.selectedCategory];
+
+      if (catObj && solutions) {
+        titleContainer.innerText = `${catObj.name}: ${state.currentLang === 'ky' ? 'Чечүү жолдору' : 'Способы решения'}`;
+        listContainer.innerHTML = solutions.map(step => `<li>${step}</li>`).join('');
+        guideBox.style.display = 'block';
+      } else {
+        guideBox.style.display = 'none';
+      }
+    }
+
+    function selectCategory(catId) {
+      state.selectedCategory = state.selectedCategory === catId ? 'all' : catId;
+      renderCategories();
+      renderProblems();
+    }
+
+    function filterByStatus(status) {
+      state.selectedStatus = status;
+      renderProblems();
+    }
+
+    function handleSearch(query) {
+      state.searchQuery = query.toLowerCase();
+      renderProblems();
+    }
+
+    function renderProblems() {
+      const feed = document.getElementById('problemsFeed');
+      feed.innerHTML = '';
+
+      let filtered = state.problems.filter(p => {
+        const matchesCategory = state.selectedCategory === 'all' || p.cat === state.selectedCategory;
+        const matchesStatus = state.selectedStatus === 'all' || p.status === state.selectedStatus;
+        const matchesSearch = p.title.toLowerCase().includes(state.searchQuery) || 
+                              p.desc.toLowerCase().includes(state.searchQuery) ||
+                              p.loc.toLowerCase().includes(state.searchQuery);
+        return matchesCategory && matchesStatus && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        feed.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">
+          ${state.currentLang === 'ky' ? 'Эч кандай кайрылуу табылган жок' : 'Ничего не найдено'}
+        </p>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'problem-card';
+
+        let badgeClass = 'badge-new';
+        let badgeText = state.currentLang === 'ky' ? 'Жаңы' : 'Новое';
+        if (p.status === 'confirmed') {
+          badgeClass = 'badge-confirmed';
+          badgeText = state.currentLang === 'ky' ? 'Тастыкталган' : 'Подтверждено';
+        } else if (p.status === 'done') {
+          badgeClass = 'badge-done';
+          badgeText = state.currentLang === 'ky' ? 'Чечилген' : 'Решено';
+        }
+
+        // Photo elements gallery
+        let photoHtml = '';
+        if (p.photos && p.photos.length > 0) {
+          photoHtml = `<div class="problem-photos">
+            ${p.photos.map(url => `<img src="${url}" class="problem-photo-img" onclick="openImageModal('${url}')">`).join('')}
+          </div>`;
+        }
+
+        card.innerHTML = `
+          <div class="problem-header">
+            <div class="problem-title">${p.title}</div>
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="problem-meta">
+            <span><i class="fa-solid fa-location-dot"></i> ${p.loc}</span>
+            <span><i class="fa-solid fa-calendar"></i> ${p.date}</span>
+          </div>
+          <div class="problem-desc">${p.desc}</div>
+          ${photoHtml}
+          <div class="problem-footer">
+            <button class="btn-confirm" onclick="addConfirmation(${p.id})">
+              <i class="fa-solid fa-thumbs-up" style="color: var(--primary);"></i>
+              <span>${state.currentLang === 'ky' ? 'Колдойм' : 'Поддерживаю'} (${p.confirmations})</span>
+            </button>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">ID: #${p.id}</span>
+          </div>
+        `;
+        feed.appendChild(card);
+      });
+    }
+
+    function addConfirmation(id) {
+      const p = state.problems.find(item => item.id === id);
+      if (p) {
+        p.confirmations += 1;
+        addXp(10);
+        renderProblems();
+      }
+    }
+
+    function addXp(amount) {
+      state.userXp += amount;
+      if (state.userXp >= 500) {
+        state.userLevel = 4;
+      }
+      document.getElementById('xpNumbers').innerText = `${state.userXp} / 500 XP`;
+      const percentage = Math.min(100, (state.userXp / 500) * 100);
+      document.getElementById('xpProgressBar').style.width = `${percentage}%`;
+    }
+
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          state.uploadedPhotos.push(e.target.result);
+          renderPhotoPreviews();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderPhotoPreviews() {
+      const container = document.getElementById('previewContainer');
+      container.innerHTML = '';
+      state.uploadedPhotos.forEach((src, index) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'preview-thumb';
+        thumb.innerHTML = `
+          <img src="${src}">
+          <div class="remove-img" onclick="removePhoto(${index})">&times;</div>
+        `;
+        container.appendChild(thumb);
+      });
+    }
+
+    function removePhoto(index) {
+      state.uploadedPhotos.splice(index, 1);
+      renderPhotoPreviews();
+    }
+
+    function openImageModal(url) {
+      document.getElementById('modalImageView').src = url;
+      document.getElementById('imageModal').classList.add('active');
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').classList.remove('active');
+    }
+
+    function openModal() { document.getElementById('problemModal').classList.add('active'); }
+    function closeModal() { document.getElementById('problemModal').classList.remove('active'); }
+
+    function submitProblem(e) {
+      e.preventDefault();
+      const title = document.getElementById('formTitle').value.trim();
+      const cat = document.getElementById('formCategory').value;
+      const loc = document.getElementById('formLocation').value.trim();
+      const desc = document.getElementById('formDesc').value.trim();
+
+      if (!title || !loc || !desc) return;
+
+      const newP = {
+        id: Date.now(),
+        title, cat, loc, desc,
+        status: 'new',
+        date: new Date().toLocaleDateString('ru-RU'),
+        confirmations: 1,
+        photos: [...state.uploadedPhotos]
+      };
+
+      state.problems.unshift(newP);
+      addXp(50);
+      renderProblems();
+
+      // Reset Form
+      state.uploadedPhotos = [];
+      renderPhotoPreviews();
+      closeModal();
+      document.getElementById('problemForm').reset();
+    }
+
+    function handleAiKeyPress(e) { if (e.key === 'Enter') sendAiMessage(); }
+
+    async function sendAiMessage() {
+      const input = document.getElementById('aiInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatBox = document.getElementById('aiChatBox');
+      
+      // User Message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'ai-msg user';
+      userMsg.innerText = text;
+      chatBox.appendChild(userMsg);
+      input.value = '';
+
+      // Loading Indicator Bot Message
+      const botMsg = document.createElement('div');
+      botMsg.className = 'ai-msg bot';
+      botMsg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ойлонууда...';
+      chatBox.appendChild(botMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        const langPrompt = state.currentLang === 'ky' 
+          ? "Сиз БИРГЕ KG платформасынын жардамчысысыз. Колдонуучуларга Кыргызстандагы социалдык, инфраструктуралык, юридикалык же күнүмдүк көйгөйлөрдү чечүүгө кыргыз тилинде сыпайы, пайдалуу жана кыска-нуска кеңеш бериңиз."
+          : "Вы ассистент платформы БИРГЕ KG. Дайте вежливый, полезный и краткий совет на русском языке по решению социальных, инфраструктурных или бытовых проблем в Кыргызстане.";
+
+        const payload = {
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: text }]
+            }
+          ],
+          systemInstruction: {
+            parts: [{ text: langPrompt }]
+          }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const candidateText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (candidateText) {
+          botMsg.innerText = candidateText;
+        } else {
+          botMsg.innerText = state.currentLang === 'ky' 
+            ? "Кечириңиз, жооп алууда ката чыкты. Кайра аракет кылып көрүңүз." 
+            : "Извините, произошла ошибка при получении ответа. Попробуйте снова.";
+        }
+      } catch (err) {
+        console.error("AI Error:", err);
+        botMsg.innerText = state.currentLang === 'ky' 
+          ? "Интернет байланышында же серверде ката чыкты." 
+          : "Ошибка подключения к сети или серверу.";
+      }
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showUserRoleInfo() {
+      alert(state.currentLang === 'ky' 
+        ? "Сиздин деңгээлиңиз: 3-деңгээл (350/500 XP)\nНаамыңыз: Инициативдүү Коомдук Контролёр\nЖаңы көйгөйлөрдү кошуу жана башкаларга добуш берүү менен XP топтоңуз!"
+        : "Ваш уровень: 3-уровень (350/500 XP)\nЗвание: Инициативный Общественный Контролер\nЗарабатывайте XP за добавление проблем и поддержку других!");
+    }
+
+    // App Initialization
+    window.onload = function() {
+      renderCategories();
+      renderProblems();
+    };
+  </script>
+</body>
+</html>
